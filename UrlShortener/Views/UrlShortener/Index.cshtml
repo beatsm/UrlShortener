@@ -1,0 +1,41 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h2>Enter the link you would like to be shortened below.</h2>
+    <input type="text" name="url" id="fullurl" placeholder="Shorten your URL" />
+    <button id="submit">Shorten</button>
+    <p id="responseArea"></p>
+</div>
+
+<script type="text/javascript">
+    var submitBtn = document.querySelector("#submit");
+    var urlInput = document.querySelector("#fullurl");
+    var responseArea = document.querySelector("#responseArea");
+
+    submitBtn.onclick = function () {
+        let url = urlInput.value;        
+        fetch("/", {
+            method: "POST",
+            body: JSON.stringify(url),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((response) => {
+            if (response.status >= 200 && response.status <= 299) {
+                return response.json();
+            } else {
+                throw Error(response.statusText);
+            }
+        }).then((jsonResponse) => {
+            if (jsonResponse.result == true) {
+                responseArea.innerHTML = "<b>Short Url: </b>" + jsonResponse.url;
+            } else {
+                responseArea.innerHTML = jsonResponse.error;                
+            }
+        }).catch((error) => {
+            alert(response.error);
+        });
+    }
+</script>
